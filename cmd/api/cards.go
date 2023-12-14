@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/sparkycj328/OnePiecePricesAPI/internal/data"
 	"net/http"
+	"time"
 )
 
 // Add a createPokemonHandler for the "POST /v1/pokemon" endpoint. For now, we simply
@@ -23,5 +25,18 @@ func (app *application) showPokemonHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	// Otherwise, interpolate the movie ID in a placeholder response.
-	fmt.Fprintf(w, "show the details of pokemon %d\n", id)
+	t := time.Now()
+	card := data.Card{
+		ID:        id,
+		CreatedAt: &t,
+		Name:      "Casablanca",
+		Version:   1,
+	}
+
+	// write the struct to the response
+	err = app.writeJSON(w, http.StatusOK, card, nil)
+	if err != nil {
+		app.logger.Error(err.Error())
+		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
+	}
 }
